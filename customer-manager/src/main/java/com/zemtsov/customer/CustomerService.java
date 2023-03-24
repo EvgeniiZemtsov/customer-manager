@@ -1,5 +1,6 @@
 package com.zemtsov.customer;
 
+import com.zemtsov.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,6 @@ public class CustomerService {
 
     public Customer getCustomer(Integer id) {
         return customerDao.selectCustomerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("customer with id [%s] not found".formatted(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with id [%s] not found".formatted(id)));
     }
 }
