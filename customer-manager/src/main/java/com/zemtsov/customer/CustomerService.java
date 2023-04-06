@@ -1,5 +1,6 @@
 package com.zemtsov.customer;
 
+import com.zemtsov.exceptions.DuplicateResourceException;
 import com.zemtsov.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,13 @@ public class CustomerService {
     public Customer getCustomer(Integer id) {
         return customerDao.selectCustomerById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer with id [%s] not found".formatted(id)));
+    }
+
+    public void addCustomer(CustomerRegistrationRequest request) {
+        if (customerDao.existsPersonWithEmail(request.email())) {
+            throw new DuplicateResourceException("Email [%s] already taken".formatted(request.email()));
+        }
+        Customer customer = new Customer(request.name(), request.email(), request.age());
+        customerDao.insertCustomer(customer);
     }
 }
