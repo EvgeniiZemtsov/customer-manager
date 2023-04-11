@@ -1,5 +1,6 @@
 package com.zemtsov.customer;
 
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -63,5 +64,10 @@ public class CustomerListDataAccessService implements CustomerDao {
     public boolean existsPersonWithId(Integer id) {
         return customers.stream()
                 .anyMatch(c -> c.getId().equals(id));
+    }
+
+    @Override
+    public void updateCustomer(Customer update) {
+        customers.add(update);
     }
 }

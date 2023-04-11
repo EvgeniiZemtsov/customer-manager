@@ -1,6 +1,7 @@
 package com.zemtsov.customer;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,5 +43,11 @@ public class CustomerJPADataAccessService implements CustomerDao {
     @Override
     public boolean existsPersonWithId(Integer id) {
         return customerRepository.existsCustomerById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateCustomer(Customer update) {
+        customerRepository.save(update);
     }
 }

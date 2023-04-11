@@ -1,6 +1,7 @@
 package com.zemtsov.customer;
 
 import com.zemtsov.exceptions.DuplicateResourceException;
+import com.zemtsov.exceptions.NoChangesFoundException;
 import com.zemtsov.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,34 @@ public class CustomerService {
             throw new ResourceNotFoundException("Customer with id [%s] not found".formatted(id));
         }
         customerDao.deleteCustomer(id);
+    }
+
+    public void updateCustomer(Integer id, CustomerRegistrationRequest request) {
+        Customer customer = customerDao.selectCustomerById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer with id [%s] not found".formatted(id)));
+
+        boolean isChange = false;
+
+        if (request.name() != null && !customer.getName().equals(request.name())) {
+            customer.setName(request.name());
+            isChange = true;
+        }
+        if (request.email() != null && !customer.getEmail().equals(request.email())) {
+            if (customerDao.existsPersonWithEmail(request.email())) {
+                throw new DuplicateResourceException("Email [%s] already taken".formatted(request.email()));
+            }
+            customer.setEmail(request.email());
+            isChange = true;
+        }
+        if (request.age() != null && !customer.getAge().equals(request.age())) {
+            customer.setAge(request.age());
+            isChange = true;
+        }
+
+        if (!isChange) {
+            throw new NoChangesFoundException("No data changes found");
+        }
+
+        customerDao.updateCustomer(customer);
     }
 }
